@@ -1,59 +1,38 @@
 <!doctype html>
-<html lang=zh-CN>
+<html lang="zh-CN">
 <head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Randomness</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;min-height:100vh;background:#000;overflow-x:hidden;font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;color:#e0d8e8}
-#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.wrap{position:relative;z-index:1;width:min(720px,100%);margin:0 auto;padding:48px 20px 80px}
-.hero{text-align:center;margin-bottom:10px}
-.hero h1{font-size:clamp(36px,8vw,64px);letter-spacing:-.04em;font-weight:700;background:linear-gradient(135deg,#c084fc,#8188f8 40%,#f59e0b 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2}
-.yiyan-box{text-align:center;margin-bottom:28px;cursor:pointer;padding:10px 0;transition:opacity .3s}
-.yiyan-box:hover{opacity:.8}
-.yiyan-box .time{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:4px}
-.yiyan-box .msg{font-size:17px;line-height:1.7;color:rgba(255,255,255,.72)}
-.yiyan-box .nxyj{margin-top:4px;font-size:13px;color:rgba(255,255,255,.4)}
-.tags{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:24px}
-.tag{padding:7px 20px;border:1px solid rgba(255,255,255,.1);border-radius:999px;font-size:13px;cursor:pointer;transition:all .25s;background:rgba(255,255,255,.04);color:rgba(255,255,255,.65);user-select:none}
-.tag:hover{border-color:rgba(192,132,252,.4);color:#fff}
-.tag.active{background:rgba(192,132,252,.2);border-color:rgba(192,132,252,.5);color:#fff}
-.cards{display:none;flex-direction:column;gap:10px}
-.cards.open{display:flex}
-.card{border-radius:16px;overflow:hidden}
-.card-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-size:14px;font-weight:500;cursor:pointer;user-select:none}
-.card-header .arrow{font-size:10px;transition:transform .3s;opacity:.5}
-.card-header .arrow.open{transform:rotate(180deg)}
-.card-body{max-height:0;overflow:hidden;transition:max-height .4sease}
-.card-body.open{max-height:3000px}
-.card-image{width:100%;background:rgba(0,0,0,.3)}
-.card-image img{width:100%;height:auto;display:block}
-.img-actions{display:flex;gap:6px;padding:8px 12px;justify-content:flex-end}
-.btn-icon{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:8px;border:none;cursor:pointer;font-size:11px;transition:all .2s;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7)}
-.btn-icon:hover{background:rgba(255,255,255,.16);color:#fff}
-.card-text{padding:10px 14px;background:rgba(0,0,0,.2)}
-.bubble-text{border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.7;word-break:break-word}
-.text-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:6px}
-.card-svc{padding:6px 16px 10px;font-size:10px;color:rgba(255,255,255,.2);word-break:break-all}
-.loader{text-align:center;padding:20px;color:rgba(255,255,255,.35);font-size:13px}
-.err{text-align:center;padding:20px;color:rgba(255,255,255,.25);font-size:13px}
-
-.���疋查枹式 */
-.th-moon .card-header{background:linear-gradient(135deg,2A4E69,3A597E);color:F9F3CC}
-.th-moon .btn-icon{background:rgba(95,141,182,.25);color:F9F3CC}
-.th-dusk .card-header{background:linear-gradient(135deg,583437,6E3E3D);color:B66E59}
-.th-dusk .btn-icon{background:rgba(182,110,88,.25);color:B66E59}
-.th-snow .card-header{background:linear-gradient(135deg,063139,1a4a52);color:B3BCC0}
-.th-snow .btn-icon{background:rgba(99,131,134,.25);color:B3BCC0}
-.th-xross .card-header{background:linear-gradient(135deg,02232F,043547);color:EEB864}
-.th-xross .btn-icon{background:rgba(151,107,63,.25);color:EEB864}
-.th-cres .card-header{background:linear-gradient(135deg,29304E,3A4165);color:E1C4A5}
-.th-cres .btn-icon{background:rgba(117,86,106,.25);color:E1C4A5}
-.th-light .card-header{background:linear-gradient(135deg,213240,7D3B39);color:DB6B49}
-.th-light .bubble-text{border:1px solid rgba(219,107,73,.25);background:rgba(219,107,73,.06)}
-.th-light .text-actions .btn-icon{background:rgba(174,81,61,.25);color:DB6B49}
-.th-dusk2 .card-header{background:linear-gradient(135deg,28355B,3A4770);color:DDD6CB}
-.th-dusk2 .bubble-text{border:1px solid rgba(186,125,128,.25);background:rgba(186,125,128,.06)}
-.th-dusk2 .text-actions .btn-icon{background:rgba(124,83,108,.25);color:DED6CB}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#001821;color:#f9f3cc;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{overflow-x:hidden}canvas{position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 50% 30%,#02232f,#001821 55%,#000f20)}.wrap{position:relative;z-index:1;min-height:100vh;width:min(760px,100%);margin:auto;padding:24px 18px 80px;display:flex;flex-direction:column;justify-content:center;transition:.35s}.wrap.top{justify-content:flex-start;padding-top:44px}h1{text-align:center;margin:0;font-size:clamp(44px,12vw,76px);line-height:1;letter-spacing:-.06em;background:linear-gradient(135deg,#cfe8fa,#eeb864 55%,#ceacac);-webkit-background-clip:text;color:transparent}.line{margin:18px auto 26px;max-width:620px;text-align:center;font-size:16px;line-height:1.8;color:rgba(249,243,204,.82);min-height:32px}.tabs{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.tab{border:1px solid rgba(249,243,204,.16);background:rgba(249,243,204,.06);color:rgba(249,243,204,.78);border-radius:999px;padding:9px 24px;font-size:14px;cursor:pointer;backdrop-filter:blur(12px)}.tab.on{background:rgba(238,184,100,.22);border-color:rgba(238,184,100,.55);color:#fff}.list{display:none;margin-top:24px;gap:14px;flex-direction:column}.list.open{display:flex}.card{border-radius:20px;overflow:hidden;background:rgba(0,24,33,.55);border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 60px rgba(0,0,0,.26);backdrop-filter:blur(14px)}.head{padding:15px 17px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:650}.body{display:none}.body.open{display:block}.load,.err{padding:26px;text-align:center;color:rgba(249,243,204,.45)}img{display:block;width:100%;height:auto}.actions{display:flex;justify-content:flex-end;gap:8px;padding:10px 12px}.btn{border:0;border-radius:999px;padding:7px 14px;background:rgba(255,255,255,.11);color:#fff;cursor:pointer}.bubble{margin:14px;padding:16px 18px;border-radius:18px;line-height:1.8;font-size:15px;word-break:break-word;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1)}.api{padding:0 16px 14px;color:rgba(255,255,255,.28);font-size:11px;word-break:break-all}.moon .head{background:linear-gradient(135deg,#1A304C,#5F8DB6);color:#F9F3CC}.dusk .head{background:linear-gradient(135deg,#583437,#B66E58);color:#F9F3CC}.snow .head{background:linear-gradient(135deg,#063139,#396386);color:#B3BCC0}.du .head{background:linear-gradient(135deg,#02232F,#976B3F);color:#EEB864}.cres .head{background:linear-gradient(135deg,#29304E,#75566A);color:#E1C4A5}.lamp .head{background:linear-gradient(135deg,#213240,#DB6B49);color:#fff}.cloud .head{background:linear-gradient(135deg,#28355B,#7C536C);color:#DDD6CB}@media(max-width:520px){.wrap.top{padding-top:28px}.line{font-size:15px}.head{padding:14px 15px}}
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<main class="wrap" id="wrap">
+  <h1>Randomness</h1>
+  <div class="line" id="line">正在捞一句夜里的话……</div>
+  <div class="tabs"><button class="tab" data-type="img">图片</button><button class="tab" data-type="txt">文案</button></div>
+  <section class="list" id="list"></section>
+</main>
+<script>
+const C='https://corsproxy.io/?';
+const apis={img:[
+{name:'随机 JK 制服',theme:'moon',kind:'direct',url:'https://shanhe.kim/api/tu/jk.php'},
+{name:'随机二次元',theme:'dusk',kind:'direct',url:'https://shanhe.kim/api/tu/anime.php'},
+{name:'猫羽雫',theme:'snow',kind:'direct',url:'https://shanhe.kim/api/tu/mao.php'},
+{name:'随机黑丝',theme:'du',kind:'jsonimg',url:'https://v2.xxapi.cn/api/heisi'},
+{name:'随机白丝',theme:'cres',kind:'jsonimg',url:'https://v2.xxapi.cn/api/baisi'}],txt:[
+{name:'舔狗日记',theme:'lamp',kind:'jsontext',url:'https://shanhe.kim/api/za/tgrj.php?type=json',field:'text'},
+{name:'BugPk 一言',theme:'cloud',kind:'text',url:'https://api.bugpk.com/api/yiyan'}]};
+const wrap=document.getElementById('wrap'),list=document.getElementById('list'),line=document.getElementById('line');let active='';
+async function timeLine(){try{let r=await fetch(C+'https://shanhe.kim/api/za/time.php'),j=await r.json();line.textContent=j.nxyj||j.msg||'今晚的月光没有迟到。'}catch(e){line.textContent='今晚的月光没有迟到。'}}timeLine();
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{let t=b.dataset.type;if(active===t){active='';list.className='list';list.innerHTML='';wrap.classList.remove('top');b.classList.remove('on');return}active=t;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));wrap.classList.add('top');render(t)});
+function render(t){list.className='list open';list.innerHTML=apis[t].map((a,i)=>`<article class="card ${a.theme}"><div class="head" onclick="openCard(${i})"><span>${a.name}</span><span>⌄</span></div><div class="body" id="b${i}"></div></article>`).join('')}
+async function openCard(i){let a=apis[active][i],b=document.getElementById('b'+i);if(b.classList.contains('open')){b.classList.remove('open');return}b.classList.add('open');b.innerHTML='<div class="load">加载中……</div>';try{if(active==='img'){let src=a.url;if(a.kind==='jsonimg'){let j=await fetch(a.url).then(r=>r.json());src=j.data||j.imgurl||j.url}src+=(src.includes('?')?'&':'?')+'t='+Date.now();b.innerHTML=`<img src="${src}" onerror="this.parentNode.innerHTML='<div class=err>图片加载失败，点开接口试试</div>'"><div class="actions"><button class="btn" onclick="event.stopPropagation();open('${src}')">打开</button><a class="btn" href="${src}" download target="_blank" onclick="event.stopPropagation()">下载</a></div><div class="api">${a.url}</div>`}else{let text='';if(a.kind==='jsontext'){let j=await fetch(C+a.url).then(r=>r.json());text=j[a.field]||j.text||j.msg||JSON.stringify(j)}else{text=await fetch(C+a.url).then(r=>r.text());text=text.replace('/&/','\n')}b.innerHTML=`<div class="bubble">${esc(text)}</div><div class="actions"><button class="btn" onclick="event.stopPropagation();copyText(${JSON.stringify(text)})">复制</button></div><div class="api">${a.url}</div>`}}catch(e){b.innerHTML='<div class="err">这个接口这次没接住，刷新再试。</div>'}}
+function esc(s){return String(s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}function copyText(t){navigator.clipboard&&navigator.clipboard.writeText(t)}
+const cv=document.getElementById('sky'),ctx=cv.getContext('2d');let w,h,ps=[];function size(){w=cv.width=innerWidth;h=cv.height=innerHeight;ps=Array.from({length:120},()=>({x:Math.random()*w,y:Math.random()*h,z:Math.random()*1+.2,r:Math.random()*1.8+.3}))}addEventListener('resize',size);size();function tick(){ctx.clearRect(0,0,w,h);ctx.fillStyle='rgba(249,243,204,.8)';for(const p of ps){p.y-=p.z*.45;p.x+=(p.x-w/2)*.0008;if(p.y<0){p.y=h;p.x=Math.random()*w}ctx.globalAlpha=p.z;ctx.beginPath();ctx.arc(p.x,p.y,p.r*p.z,0,7);ctx.fill()}ctx.globalAlpha=.16;ctx.strokeStyle='#5F8DB6';for(let i=0;i<ps.length;i++)for(let j=i+1;j<ps.length;j++){let a=ps[i],b=ps[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<90){ctx.globalAlpha=(90-d)/900;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}}requestAnimationFrame(tick)}tick();
+</script>
+</body>
+</html>
