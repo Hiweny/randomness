@@ -8,73 +8,64 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:#0f0f1a;color:#e0d8e8;min-height:100vh;padding:24px 16px 48px}
 .wrap{width:min(800px,100%);margin:auto}
-
-/* 顶部时间段一言 */
 .time-card{background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:24px;margin-bottom:28px;text-align:center;cursor:pointer;transition:.2s}
 .time-card:hover{border-color:rgba(245,158,11,.25)}
 .time-card .time{font-size:13px;color:rgba(224,216,232,.48);margin-bottom:10px}
 .time-card .msg{font-size:20px;line-height:1.6;font-weight:500}
 .time-card .nxyj{margin-top:8px;font-size:15px;color:rgba(224,216,232,.66)}
-
 .header{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap}
 h1{font-size:clamp(28px,5vw,44px);letter-spacing:-.04em;background:linear-gradient(135deg,#c084fc,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2}
 .sub{color:rgba(224,216,232,.48);font-size:14px;margin-bottom:24px}
-
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
 .btn{padding:6px 14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);border-radius:999px;color:rgba(224,216,232,.7);cursor:pointer;font-size:13px;transition:.15s}
 .btn:hover{border-color:rgba(192,132,252,.4);color:#e0d8e8}
 .btn.active{background:rgba(192,132,252,.2);border-color:#c084fc;color:#e0d8e8}
-
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
 .card{border:1px solid rgba(255,255,255,.06);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s;background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.01))}
 .card:hover{border-color:rgba(192,132,252,.35);transform:translateY(-3px);box-shadow:0 8px 24px rgba(192,132,252,.12)}
 .card-header{padding:12px 14px 0;display:flex;justify-content:space-between;align-items:center}
 .card-header h3{font-size:13px;font-weight:600}
 .card-header .tag{font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(192,132,252,.18);color:#c084fc}
-
 .card-preview{width:100%;aspect-ratio:1;background:#141420;display:grid;place-items:center;overflow:hidden;position:relative}
 .card-preview img{width:100%;height:100%;object-fit:contain;transition:opacity .3s}
-.card-preview .placeholder{color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px}
-
-.card-preview.bubble{aspect-ratio:auto;min-height:120px;padding:20px 16px;display:flex;align-items:center;justify-content:center}
+.card-preview.static{aspect-ratio:auto;min-height:120px;padding:20px 16px;display:flex;align-items:center;justify-content:center}
 .bubble-text{background:linear-gradient(135deg,rgba(192,132,252,.15),rgba(245,158,11,.08));border:1px solid rgba(192,132,252,.2);border-radius:18px;padding:16px 18px;font-size:14px;line-height:1.7;color:rgba(224,216,232,.9);max-width:100%;word-break:break-word}
-
 .card-footer{padding:8px 14px 12px;color:rgba(224,216,232,.28);font-size:10px;word-break:break-all;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.loading{text-align:center;color:rgba(224,216,232,.3);padding:48px}
-
 .refresh-btn{display:inline-flex;align-items:center;gap:4px;margin-left:auto;padding:4px 12px;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:rgba(255,255,255,.04);color:rgba(224,216,232,.5);cursor:pointer;font-size:12px;transition:.15s}
 .refresh-btn:hover{border-color:rgba(192,132,252,.4);color:#e0d8e8}
 </style>
 </head>
 <body>
 <div class="wrap" id="app">
-
 <div class="time-card" id="timeCard">
 <div class="time" id="timeNow">加载中...</div>
 <div class="msg" id="timeMsg">✨</div>
 <div class="nxyj" id="timeNxyj"></div>
 </div>
-
 <div class="header">
 <h1>Randomness</h1>
 <button class="refresh-btn" id="refreshAll">⟳ 刷新全部</button>
 </div>
 <p class="sub">随手测各种免费好玩的 API ╮(¯▽¯)╭</p>
-
 <div class="actions" id="filters"></div>
 <div class="grid" id="grid"></div>
 </div>
-
 <script>
+// CORS代理（需解析JSON时使用）
+const CORS = 'https://corsproxy.io/?';
+
 const apis=[
-{id:'jk',name:'JK制服图',type:'image',url:'https://shanhe.kim/api/tu/jk.php?type=json',parser:r=>r.image,cat:'图片'},
-{id:'anime',name:'二次元动漫',type:'image',url:'https://shanhe.kim/api/tu/anime.php?type=json',parser:r=>r.image,cat:'图片'},
-{id:'mao',name:'猫羽雫',type:'image',url:'https://shanhe.kim/api/tu/mao.php?type=json',parser:r=>r.image,cat:'图片'},
-{id:'heisi',name:'随机黑丝',type:'image',url:'https://v2.xxapi.cn/api/heisi',parser:r=>r.data,cat:'图片'},
-{id:'baisi',name:'随机白丝',type:'image',url:'https://v2.xxapi.cn/api/baisi',parser:r=>r.data,cat:'图片'},
-{id:'setu',name:'随机色图',type:'image',url:'https://api.mtyqx.cn/api/random.php?return=json',parser:r=>r.imgurl,cat:'图片'},
-{id:'tgrj',name:'舔狗日记',type:'text',url:'https://shanhe.kim/api/za/tgrj.php?type=json',parser:r=>r.text,cat:'文案'},
-{id:'yiyan',name:'BugPk一言',type:'text',url:'https://api.bugpk.com/api/yiyan',parser:r=>{const p=r.split('/&/');return p[1]||p[0]||r},cat:'文案'}
+// 图片类 - 直接<img>加载（shanhe默认返回图片）
+{id:'jk',name:'JK制服图',type:'img',url:'https://shanhe.kim/api/tu/jk.php',cat:'图片'},
+{id:'anime',name:'二次元动漫',type:'img',url:'https://shanhe.kim/api/tu/anime.php',cat:'图片'},
+{id:'mao',name:'猫羽雫',type:'img',url:'https://shanhe.kim/api/tu/mao.php',cat:'图片'},
+// 图片类 - 需CORS代理解析JSON
+{id:'heisi',name:'随机黑丝',type:'json-img',url:'https://v2.xxapi.cn/api/heisi',parser:r=>r.data,cors:false,cat:'图片'},
+{id:'baisi',name:'随机白丝',type:'json-img',url:'https://v2.xxapi.cn/api/baisi',parser:r=>r.data,cors:false,cat:'图片'},
+{id:'setu',name:'随机色图',type:'json-img',url:'https://api.mtyqx.cn/api/random.php?return=json',parser:r=>r.imgurl,cors:true,cat:'图片'},
+// 文案类 - 需CORS代理
+{id:'tgrj',name:'舔狗日记',type:'text',url:'https://shanhe.kim/api/za/tgrj.php?type=json',parser:r=>r.text,cors:true,cat:'文案'},
+{id:'yiyan',name:'BugPk一言',type:'text',url:'https://api.bugpk.com/api/yiyan',parser:r=>{const p=r.split('/&/');return p[1]||p[0]||r},cors:false,cat:'文案'}
 ];
 
 let active='全部';
@@ -85,10 +76,12 @@ document.getElementById('filters').onclick=e=>{const b=e.target.closest('.btn');
 function render(){
 const list=active==='全部'?apis:apis.filter(a=>a.cat===active);
 document.getElementById('grid').innerHTML=list.map(a=>{
-if(a.type==='image'){
-return `<div class="card" data-id="${a.id}"><div class="card-header"><h3>${a.name}</h3><span class="tag">${a.cat}</span></div><div class="card-preview" id="pre-${a.id}"><div class="placeholder">点我加载 ✨</div></div><div class="card-footer">${a.url}</div></div>`
+if(a.type==='img'){
+return `<div class="card" data-id="${a.id}"><div class="card-header"><h3>${a.name}</h3><span class="tag">${a.cat}</span></div><div class="card-preview" id="pre-${a.id}"><div class="placeholder" style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">点我加载 ✨</div></div><div class="card-footer">${a.url}</div></div>`
+}else if(a.type==='json-img'){
+return `<div class="card" data-id="${a.id}"><div class="card-header"><h3>${a.name}</h3><span class="tag">${a.cat}</span></div><div class="card-preview" id="pre-${a.id}"><div class="placeholder" style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">点我加载 ✨</div></div><div class="card-footer">${a.url}</div></div>`
 }else{
-return `<div class="card" data-id="${a.id}"><div class="card-header"><h3>${a.name}</h3><span class="tag">${a.cat}</span></div><div class="card-preview bubble" id="pre-${a.id}"><div class="placeholder">点我加载 ✨</div></div><div class="card-footer">${a.url}</div></div>`
+return `<div class="card" data-id="${a.id}"><div class="card-header"><h3>${a.name}</h3><span class="tag">${a.cat}</span></div><div class="card-preview static" id="pre-${a.id}"><div class="placeholder" style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">点我加载 ✨</div></div><div class="card-footer">${a.url}</div></div>`
 }
 }).join('')}
 render();
@@ -96,29 +89,35 @@ render();
 document.getElementById('grid').onclick=async function(e){
 const card=e.target.closest('.card');if(!card)return;
 const id=card.dataset.id;const api=apis.find(a=>a.id===id);if(!api)return;
-loadCard(api);
-};
-
-async function loadCard(api,id){
-const preview=document.getElementById('pre-'+(id||api.id));
-if(!preview)return;
-preview.innerHTML='<div class="placeholder">加载中…</div>';
+const preview=document.getElementById('pre-'+id);
+preview.innerHTML='<div style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">加载中…</div>';
 try{
-const r=await fetch(api.url);
-if(api.type==='image'){
+if(api.type==='img'){
+// 直接<img>加载图片，无CORS问题
+const img=new Image();
+img.style.cssText='width:100%;height:100%;object-fit:contain';
+img.src=api.url+'&_t='+Date.now();
+await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej('img error');setTimeout(()=>rej('timeout'),15000)});
+preview.innerHTML='';
+preview.appendChild(img);
+}else if(api.type==='json-img'){
+const url=(api.cors?CORS:'')+api.url;
+const r=await fetch(url);
 const j=await r.json();
 const imgUrl=api.parser(j);
-if(!imgUrl)throw'no img';
-preview.innerHTML=`<img src="${imgUrl}" referrerpolicy="no-referrer">`;
+if(!imgUrl)throw'no url';
+preview.innerHTML=`<img src="${imgUrl}" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:contain">`;
 }else{
+const url=(api.cors?CORS:'')+api.url;
+const r=await fetch(url);
 const t=await r.text();
 let txt='';
 try{const j=JSON.parse(t);txt=api.parser(j)}catch{txt=t};
-if(!txt)txt='(空)'; 
+if(!txt)txt='(空)';
 preview.innerHTML=`<div class="bubble-text">${txt}</div>`;
 }
-}catch(e){preview.innerHTML='<div class="placeholder">加载失败 😿</div>'}
-}
+}catch(e){preview.innerHTML='<div style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">加载失败 😿</div>'}
+};
 
 document.getElementById('timeCard').onclick=async function(){
 loadTimeYiyan();
@@ -129,7 +128,7 @@ const m=document.getElementById('timeMsg');
 const x=document.getElementById('timeNxyj');
 n.textContent='加载中...';
 try{
-const r=await fetch('https://shanhe.kim/api/za/time.php');
+const r=await fetch(CORS+'https://shanhe.kim/api/za/time.php');
 const j=await r.json();
 if(j.code==1){
 n.textContent='⏰ '+j.nowtime+' · '+j.msg;
@@ -147,7 +146,13 @@ document.getElementById('refreshAll').onclick=async function(){
 const btn=this;
 btn.textContent='⟳ 刷新中…';
 const all=active==='全部'?apis:apis.filter(a=>a.cat===active);
-await Promise.all(all.map(a=>loadCard(a).catch(()=>{})));
+for(const a of all){
+try{
+const card=document.querySelector(`[data-id="${a.id}"]`);
+if(card)card.click();
+await new Promise(r=>setTimeout(r,500));
+}catch{}
+}
 btn.textContent='⟳ 刷新全部';
 };
 
