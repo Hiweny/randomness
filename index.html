@@ -1,352 +1,59 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang=zh-CN>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
 <title>Randomness</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;min-height:100vh;background:#000;overflow-x:hidden;font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;color:#e0d8e8}
-
-/* 星空背景 canvas */
 #bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-
-/* 主容器 */
 .wrap{position:relative;z-index:1;width:min(720px,100%);margin:0 auto;padding:48px 20px 80px}
-
-/* ======= 标题区 ======= */
-.hero{text-align:center;margin-bottom:12px}
-.hero h1{font-size:clamp(36px,8vw,64px);letter-spacing:-.04em;font-weight:700;background:linear-gradient(135deg,#c084fc 0%,#818cf8 40%,#f59e0b 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2}
-
-/* 时间段一言 */
-.yiyan-box{text-align:center;margin-bottom:28px;cursor:pointer;padding:12px 0;transition:opacity .3s}
+.hero{text-align:center;margin-bottom:10px}
+.hero h1{font-size:clamp(36px,8vw,64px);letter-spacing:-.04em;font-weight:700;background:linear-gradient(135deg,#c084fc,#8188f8 40%,#f59e0b 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2}
+.yiyan-box{text-align:center;margin-bottom:28px;cursor:pointer;padding:10px 0;transition:opacity .3s}
 .yiyan-box:hover{opacity:.8}
-.yiyan-box .time{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:6px}
-.yiyan-box .msg{font-size:17px;line-height:1.7;color:rgba(255,255,255,.72);font-weight:400}
-.yiyan-box .nxyj{margin-top:4px;font-size:14px;color:rgba(255,255,255,.45)}
-
-/* ======= 分类标签 ======= */
-.tags{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:24px}
-.tag{padding:7px 16px;border:1px solid rgba(255,255,255,.1);border-radius:999px;font-size:13px;cursor:pointer;transition:all .25s;background:rgba(255,255,255,.04);color:rgba(255,255,255,.65);user-select:none}
+.yiyan-box .time{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:4px}
+.yiyan-box .msg{font-size:17px;line-height:1.7;color:rgba(255,255,255,.72)}
+.yiyan-box .nxyj{margin-top:4px;font-size:13px;color:rgba(255,255,255,.4)}
+.tags{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:24px}
+.tag{padding:7px 20px;border:1px solid rgba(255,255,255,.1);border-radius:999px;font-size:13px;cursor:pointer;transition:all .25s;background:rgba(255,255,255,.04);color:rgba(255,255,255,.65);user-select:none}
 .tag:hover{border-color:rgba(192,132,252,.4);color:#fff}
 .tag.active{background:rgba(192,132,252,.2);border-color:rgba(192,132,252,.5);color:#fff}
-
-/* ======= 卡片区 ======= */
-.cards{display:none;flex-direction:column;gap:10px;margin-top:2px}
+.cards{display:none;flex-direction:column;gap:10px}
 .cards.open{display:flex}
-
-.card{border-radius:16px;overflow:hidden;transition:all .3s;cursor:pointer}
-.card-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-size:14px;font-weight:500;letter-spacing:.3px;user-select:none}
-.card-header .arrow{font-size:11px;transition:transform .3s;opacity:.6}
+.card{border-radius:16px;overflow:hidden}
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-size:14px;font-weight:500;cursor:pointer;user-select:none}
+.card-header .arrow{font-size:10px;transition:transform .3s;opacity:.5}
 .card-header .arrow.open{transform:rotate(180deg)}
-
-.card-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
-.card-body.open{max-height:2000px}
-
-/* 图片展示 - 无占位，直接延伸 */
-.card-image{width:100%;background:rgba(0,0,0,.3);display:flex;flex-direction:column;align-items:center}
-.card-image img{width:100%;height:auto;object-fit:contain;display:block}
-.card-image .img-actions{width:100%;display:flex;gap:6px;padding:8px 12px;justify-content:flex-end}
+.card-body{max-height:0;overflow:hidden;transition:max-height .4sease}
+.card-body.open{max-height:3000px}
+.card-image{width:100%;background:rgba(0,0,0,.3)}
+.card-image img{width:100%;height:auto;display:block}
+.img-actions{display:flex;gap:6px;padding:8px 12px;justify-content:flex-end}
 .btn-icon{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:8px;border:none;cursor:pointer;font-size:11px;transition:all .2s;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7)}
 .btn-icon:hover{background:rgba(255,255,255,.16);color:#fff}
-
-/* 文案气泡 */
 .card-text{padding:10px 14px;background:rgba(0,0,0,.2)}
-.bubble-text{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.7;word-break:break-word;position:relative}
+.bubble-text{border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.7;word-break:break-word}
 .text-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:6px}
+.card-svc{padding:6px 16px 10px;font-size:10px;color:rgba(255,255,255,.2);word-break:break-all}
+.loader{text-align:center;padding:20px;color:rgba(255,255,255,.35);font-size:13px}
+.err{text-align:center;padding:20px;color:rgba(255,255,255,.25);font-size:13px}
 
-/* 卡片底部服务名 */
-.card-service{padding:6px 16px 10px;font-size:10px;color:rgba(255,255,255,.25);word-break:break-all}
-
-/* 加载中 / 错误 */
-.loader{text-align:center;padding:24px 16px;color:rgba(255,255,255,.35);font-size:13px}
-.err{text-align:center;padding:24px 16px;color:rgba(255,255,255,.25);font-size:13px}
-
-/* ======= 配色方案 ======= */
-
-/* 月下海 - JK制服图 */
-.theme-moon-sea .card-header{background:linear-gradient(135deg,#1A304C,#2A405C);color:#F9F3CC}
-.theme-moon-sea .card-image{background:rgba(26,48,76,.5)}
-.theme-moon-sea .btn-icon{background:rgba(95,141,182,.25);color:#F9F3CC}
-.theme-moon-sea .btn-icon:hover{background:rgba(95,141,182,.4)}
-.theme-moon-sea .bubble-text{border-color:rgba(206,172,172,.3);background:rgba(206,172,172,.08)}
-
-/* 天黑以前 - 二次元动漫 */
-.theme-dusk .card-header{background:linear-gradient(135deg,#583437,#6E3E3D);color:#B66E58}
-.theme-dusk .card-image{background:rgba(88,52,55,.5)}
-.theme-dusk .btn-icon{background:rgba(182,110,88,.25);color:#B66E58}
-.theme-dusk .btn-icon:hover{background:rgba(182,110,88,.4)}
-.theme-dusk .bubble-text{border-color:rgba(134,98,106,.3);background:rgba(134,98,106,.08)}
-
-/* 雪国夜 - 猫羽雫 */
-.theme-snow .card-header{background:linear-gradient(135deg,#063139,#1A4A52);color:#B3BCC0}
-.theme-snow .card-image{background:rgba(6,49,57,.5)}
-.theme-snow .btn-icon{background:rgba(99,131,134,.25);color:#B3BCC0}
-.theme-snow .btn-icon:hover{background:rgba(99,131,134,.4)}
-.theme-snow .bubble-text{border-color:rgba(126,91,97,.3);background:rgba(126,91,97,.08)}
-
-/* 渡月 - 随机黑丝 */
-.theme-moon-cross .card-header{background:linear-gradient(135deg,#02232F,#043547);color:#EEB864}
-.theme-moon-cross .card-image{background:rgba(2,35,47,.5)}
-.theme-moon-cross .btn-icon{background:rgba(151,107,63,.25);color:#EEB864}
-.theme-moon-cross .btn-icon:hover{background:rgba(151,107,63,.4)}
-.theme-moon-cross .bubble-text{border-color:rgba(151,107,63,.3);background:rgba(151,107,63,.08)}
-
-/* 弦月渡 - 随机白丝 */
-.theme-crescent .card-header{background:linear-gradient(135deg,#29304E,#3A4165);color:#E1C4A5}
-.theme-crescent .card-image{background:rgba(41,48,78,.5)}
-.theme-crescent .btn-icon{background:rgba(117,86,106,.25);color:#E1C4A5}
-.theme-crescent .btn-icon:hover{background:rgba(117,86,106,.4)}
-.theme-crescent .bubble-text{border-color:rgba(117,86,106,.3);background:rgba(117,86,106,.08)}
-
-/* 夜航灯 - 舔狗日记 */
-.theme-lighthouse .card-header{background:linear-gradient(135deg,#213240,#7D3B39);color:#DB6B49}
-.theme-lighthouse .bubble-text{border-color:rgba(219,107,73,.25);background:rgba(219,107,73,.06)}
-.theme-lighthouse .text-actions .btn-icon{background:rgba(174,81,61,.25);color:#DB6B49}
-
-/* 暮云深 - BugPk一言 */
-.theme-twilight .card-header{background:linear-gradient(135deg,#28355B,#3A4770);color:#DDD6CB}
-.theme-twilight .bubble-text{border-color:rgba(186,125,128,.25);background:rgba(186,125,128,.06)}
-.theme-twilight .text-actions .btn-icon{background:rgba(124,83,108,.25);color:#DDD6CB}
-
-/* ======= 响应式 ======= */
-@media(max-width:480px){
-.wrap{padding:32px 14px 60px}
-.hero h1{font-size:clamp(28px,10vw,44px)}
-.yiyan-box .msg{font-size:15px}
-}
-</style>
-</head>
-<body>
-
-<canvas id="bg-canvas"></canvas>
-
-<div class="wrap">
-<div class="hero">
-<h1>Randomness</h1>
-</div>
-
-<div class="yiyan-box" id="yiyanBox">
-<div class="time" id="timeLine">加载中...</div>
-<div class="msg" id="msgLine">✨</div>
-<div class="nxyj" id="nxyjLine"></div>
-</div>
-
-<div class="tags" id="tags"></div>
-<div class="cards" id="cards"></div>
-</div>
-
-<script>
-const CORS='https://corsproxy.io/?';
-
-const apis=[
-{id:'jk',name:'JK制服图',type:'img',url:'https://shanhe.kim/api/tu/jk.php',theme:'moon-sea',cat:'图片'},
-{id:'anime',name:'二次元动漫',type:'img',url:'https://shanhe.kim/api/tu/anime.php',theme:'dusk',cat:'图片'},
-{id:'mao',name:'猫羽雫',type:'img',url:'https://shanhe.kim/api/tu/mao.php',theme:'snow',cat:'图片'},
-{id:'heisi',name:'随机黑丝',type:'json-img',url:'https://v2.xxapi.cn/api/heisi',parser:r=>r.data,theme:'moon-cross',cat:'图片'},
-{id:'baisi',name:'随机白丝',type:'json-img',url:'https://v2.xxapi.cn/api/baisi',parser:r=>r.data,theme:'crescent',cat:'图片'},
-{id:'tgrj',name:'舔狗日记',type:'text',url:'https://shanhe.kim/api/za/tgrj.php?type=json',parser:r=>r.text,theme:'lighthouse',cat:'文案'},
-{id:'yiyan',name:'BugPk一言',type:'text',url:'https://api.bugpk.com/api/yiyan',parser:r=>{const p=r.split('/&/');return p[1]||p[0]||r},theme:'twilight',cat:'文案'}
-];
-
-let activeCat=null;
-const cats=['图片','文案'];
-
-// 渲染分类标签
-document.getElementById('tags').innerHTML=cats.map(c=>`<span class="tag" data-cat="${c}">${c}</span>`).join('');
-
-// 点击分类标签
-document.getElementById('tags').onclick=function(e){
-const t=e.target.closest('.tag');if(!t)return;
-const cat=t.dataset.cat;
-if(activeCat===cat){
-activeCat=null;
-document.querySelectorAll('.tag').forEach(x=>x.classList.remove('active'));
-document.getElementById('cards').classList.remove('open');
-}else{
-activeCat=cat;
-document.querySelectorAll('.tag').forEach(x=>x.classList.toggle('active',x.dataset.cat===cat));
-renderCards(cat);
-document.getElementById('cards').classList.add('open');
-}
-};
-
-function renderCards(cat){
-const list=apis.filter(a=>a.cat===cat);
-document.getElementById('cards').innerHTML=list.map((a,i)=>{
-const th=a.theme;
-if(a.type==='img'){
-return `<div class="card theme-${th}"><div class="card-header" onclick="toggleCard(this)"><span>${a.name}</span><span class="arrow">▾</span></div><div class="card-body" id="body-${a.id}"><div class="loader">点我加载 ✦</div><div class="card-service">${a.url}</div></div></div>`
-}else if(a.type==='json-img'){
-return `<div class="card theme-${th}"><div class="card-header" onclick="toggleCard(this)"><span>${a.name}</span><span class="arrow">▾</span></div><div class="card-body" id="body-${a.id}"><div class="loader">点我加载 ✦</div><div class="card-service">${a.url}</div></div></div>`
-}else{
-return `<div class="card theme-${th}"><div class="card-header" onclick="toggleCard(this)"><span>${a.name}</span><span class="arrow">▾</span></div><div class="card-body" id="body-${a.id}"><div class="loader">点我加载 ✦</div><div class="card-service">${a.url}</div></div></div>`
-}
-}).join('');
-// 自动展开第一个
-setTimeout(()=>{
-const first=document.querySelector('.card-body');
-if(first)loadCard(first.closest('.card'));
-},200);
-}
-
-window.toggleCard=function(el){
-const body=el.nextElementSibling;
-const arrow=el.querySelector('.arrow');
-if(!body)return;
-const opening=!body.classList.contains('open');
-body.classList.toggle('open');
-arrow.classList.toggle('open');
-if(opening){
-const card=el.closest('.card');
-if(card)loadCard(card);
-}
-};
-
-async function loadCard(card){
-const id=card.dataset?.id;
-const api=apis.find(a=>a.id===id);
-if(!api)return;
-const body=card.querySelector('.card-body');
-if(!body||body.dataset.loaded)return;
-body.dataset.loaded='1';
-body.innerHTML='<div class="loader">加载中…</div>';
-try{
-if(api.type==='img'){
-const img=new Image();
-const t=Date.now();
-img.src=api.url+(api.url.includes('?')?'&':'?')+'_t='+t;
-img.style.cssText='width:100%;height:auto;display:block';
-await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej();setTimeout(()=>rej(),12000)});
-body.innerHTML=`<div class="card-image">${img.outerHTML}<div class="img-actions"><button class="btn-icon" onclick="downloadImg('${img.src}','${api.name}')">⬇ 下载</button></div></div><div class="card-service">${api.url}</div>`;
-}else if(api.type==='json-img'){
-const r=await fetch(api.cors?CORS+api.url:api.url);
-const j=await r.json();
-const u=api.parser(j);
-if(!u)throw 0;
-body.innerHTML=`<div class="card-image"><img src="${u}" referrerpolicy="no-referrer" style="width:100%;height:auto;display:block"><div class="img-actions"><button class="btn-icon" onclick="downloadImg('${u}','${api.name}')">⬇ 下载</button></div></div><div class="card-service">${api.url}</div>`;
-}else{
-const r=await fetch(api.cors?CORS+api.url:api.url);
-const t=await r.text();
-let txt='';
-try{const j=JSON.parse(t);txt=api.parser(j)}catch{txt=t};
-if(!txt)txt='(空)';
-body.innerHTML=`<div class="card-text"><div class="bubble-text">${txt.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div><div class="text-actions"><button class="btn-icon" onclick="copyText('${txt.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,"\\'")}')">📋 复制</button></div></div><div class="card-service">${api.url}</div>`;
-}
-body.classList.add('open');
-const arrow=card.querySelector('.arrow');
-if(arrow)arrow.classList.add('open');
-}catch(e){
-body.innerHTML='<div class="err">加载失败 😿</div><div class="card-service">'+api.url+'</div>';
-}
-}
-
-window.downloadImg=async function(url,name){
-try{
-const r=await fetch(url);
-const blob=await r.blob();
-const a=document.createElement('a');
-a.href=URL.createObjectURL(blob);
-a.download=name+'.'+blob.type.split('/')[1]||'jpg';
-a.click();
-setTimeout(()=>URL.revokeObjectURL(a.href),1e4);
-}catch{alert('下载失败')}
-};
-
-window.copyText=function(t){
-navigator.clipboard.writeText(t).then(()=>{alert('已复制')}).catch(()=>{alert('复制失败')});
-};
-
-// 时间段一言
-document.getElementById('yiyanBox').onclick=loadYiyan;
-async function loadYiyan(){
-const tl=document.getElementById('timeLine');
-const ml=document.getElementById('msgLine');
-const nl=document.getElementById('nxyjLine');
-tl.textContent='加载中...';
-try{
-const r=await fetch(CORS+'https://shanhe.kim/api/za/time.php');
-const j=await r.json();
-if(j.code==1){
-tl.textContent='⏰ '+j.nowtime+' · '+j.msg;
-ml.textContent=j.nxyj;
-nl.textContent='✦ 点此换一句';
-}else throw 0;
-}catch{
-tl.textContent='⏰';
-ml.textContent='夜色温柔，星光正好';
-nl.textContent='';
-}
-}
-loadYiyan();
-setInterval(loadYiyan,30000);
-
-// ====== 星空背景canvas（从starry-sky-video-bg移植） ======
-(()=>{
-const canvas=document.getElementById('bg-canvas');
-const ctx=canvas.getContext('2d');
-let W,H,dpr;
-let time=0;
-let particles=[];
-const PC=600;
-const SPD=1.8;
-const COLORS=[
-{r:80,g:230,b:255},{r:200,g:100,b:255},{r:255,g:80,b:180},
-{r:120,g:220,b:255},{r:255,g:255,b:255},{r:255,g:150,b:255}
-];
-function resize(){
-dpr=Math.min(window.devicePixelRatio||1,2);
-W=window.innerWidth;H=window.innerHeight;
-canvas.width=W*dpr;canvas.height=H*dpr;
-ctx.setTransform(dpr,0,0,dpr,0,0);}
-function rc(){return COLORS[Math.floor(Math.random()*COLORS.length)]}
-function cp(){
-const t=Math.random();let s;
-if(t<.3)s='filled-star';else if(t<.5)s='outline-star';else if(t<.65)s='dot';
-else if(t<.78)s='cross';else if(t<.88)s='glow';else s='sparkle';
-return{x:(Math.random()-.5)*W*3,y:(Math.random()-.5)*H*3,z:Math.random()*2000+500,
-size:2+Math.random()*12,color:rc(),shape:s,phase:Math.random()*Math.PI*2,
-twinkleSpeed:.5+Math.random()*2,rotation:Math.random()*Math.PI*2,rotSpeed:(Math.random()-.5)*.02};}
-function init(){particles=[];for(let i=0;i<PC;i++){const p=cp();p.z=Math.random()*2500;particles.push(p)}}
-function ds(cx,cy,sz,cl,al,rot){
-ctx.save();ctx.translate(cx,cy);ctx.rotate(rot);ctx.beginPath();
-for(let i=0;i<10;i++){const r=i%2===0?sz:sz*.4;a=i*Math.PI/5-Math.PI/2;i===0?ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r):ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r)}
-ctx.closePath();ctx.fillStyle=`rgba(${cl.r},${cl.g},${cl.b},${al})`;ctx.shadowColor=`rgba(${cl.r},${cl.g},${cl.b},${al*.8})`;ctx.shadowBlur=sz*1.5;ctx.fill();ctx.shadowBlur=0;ctx.restore()}
-function dos(cx,cy,sz,cl,al,rot){
-ctx.save();ctx.translate(cx,cy);ctx.rotate(rot);ctx.beginPath();
-for(let i=0;i<10;i++){const r=i%2===0?sz:sz*.4;a=i*Math.PI/5-Math.PI/2;i===0?ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r):ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r)}
-ctx.closePath();ctx.strokeStyle=`rgba(${cl.r},${cl.g},${cl.b},${al})`;ctx.lineWidth=Math.max(.5,sz*.12);ctx.shadowColor=`rgba(${cl.r},${cl.g},${cl.b},${al*.6})`;ctx.shadowBlur=sz;ctx.stroke();ctx.shadowBlur=0;ctx.restore()}
-function dc(cx,cy,sz,cl,al){
-ctx.save();ctx.translate(cx,cy);ctx.strokeStyle=`rgba(${cl.r},${cl.g},${cl.b},${al})`;ctx.lineWidth=Math.max(.5,sz*.15);ctx.shadowColor=`rgba(${cl.r},${cl.g},${cl.b},${al*.7})`;ctx.shadowBlur=sz*.8;const r=sz*.7;ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(0,r);ctx.moveTo(-r,0);ctx.lineTo(r,0);ctx.stroke();ctx.shadowBlur=0;ctx.restore()}
-function dg(cx,cy,sz,cl,al){
-const g=ctx.createRadialGradient(cx,cy,0,cx,cy,sz*3);g.addColorStop(0,`rgba(${cl.r},${cl.g},${cl.b},${al*.6})`);g.addColorStop(.5,`rgba(${cl.r},${cl.g},${cl.b},${al*.2})`);g.addColorStop(1,`rgba(${cl.r},${cl.g},${cl.b},0)`);ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,sz*3,0,Math.PI*2);ctx.fill()}
-function dd(cx,cy,sz,cl,al){
-ctx.beginPath();ctx.arc(cx,cy,Math.max(.5,sz*.35),0,Math.PI*2);ctx.fillStyle=`rgba(${cl.r},${cl.g},${cl.b},${al})`;ctx.shadowColor=`rgba(${cl.r},${cl.g},${cl.b},${al*.8})`;ctx.shadowBlur=sz*1.2;ctx.fill();ctx.shadowBlur=0}
-function dsp(cx,cy,sz,cl,al,rot){
-ctx.save();ctx.translate(cx,cy);ctx.rotate(rot);ctx.strokeStyle=`rgba(${cl.r},${cl.g},${cl.b},${al})`;ctx.lineWidth=Math.max(.5,sz*.1);ctx.shadowColor=`rgba(${cl.r},${cl.g},${cl.b},${al*.7})`;ctx.shadowBlur=sz;const r=sz*.8;ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(0,r);ctx.moveTo(-r*.5,-r*.3);ctx.lineTo(r*.5,r*.3);ctx.moveTo(-r*.5,r*.3);ctx.lineTo(r*.5,-r*.3);ctx.stroke();ctx.shadowBlur=0;ctx.restore()}
-function animate(){
-time+=.016;ctx.fillStyle='rgba(0,0,0,.12)';ctx.fillRect(0,0,W,H);
-const cx=W/2,cy=H/2,fl=350;
-particles.sort((a,b)=>b.z-a.z);
-for(const p of particles){
-p.z-=SPD*(1+(2500-p.z)/2500);p.rotation+=p.rotSpeed;
-if(p.z<=10){Object.assign(p,cp());p.z=2500;continue}
-const sc=fl/p.z;sx=cx+p.x*sc;sy=cy+p.y*sc;ps=p.size*sc;
-if(sx<-50||sx>W+50||sy<-50||sy>H+50)continue;
-let al=1;if(p.z>2000)al=(2500-p.z)/500;if(p.z<200)al=p.z/200;al=Math.max(0,Math.min(1,al));
-al*=.7+.3*Math.sin(time*p.twinkleSpeed+p.phase);
-if(ps<.3){ctx.beginPath();ctx.arc(sx,sy,Math.max(.3,ps),0,Math.PI*2);ctx.fillStyle=`rgba(${p.color.r},${p.color.g},${p.color.b},${al*.6})`;ctx.fill();continue}
-switch(p.shape){
-case'filled-star':ds(sx,sy,ps,p.color,al,p.rotation);break;
-case'outline-star':dos(sx,sy,ps,p.color,al,p.rotation);break;
-case'cross':dc(sx,sy,ps,p.color,al);break;
-case'glow':dg(sx,sy,ps,p.color,al);break;
-case'sparkle':dsp(sx,sy,ps,p.color,al,p.rotation);break;
-default:dd(sx,sy,ps,p.color,al);
-}}}
-window.addEventListener('resize',resize);
-resize();init();animate();
-})();
-</script>
-</body>
-</html>
+.���疋查枹式 */
+.th-moon .card-header{background:linear-gradient(135deg,2A4E69,3A597E);color:F9F3CC}
+.th-moon .btn-icon{background:rgba(95,141,182,.25);color:F9F3CC}
+.th-dusk .card-header{background:linear-gradient(135deg,583437,6E3E3D);color:B66E59}
+.th-dusk .btn-icon{background:rgba(182,110,88,.25);color:B66E59}
+.th-snow .card-header{background:linear-gradient(135deg,063139,1a4a52);color:B3BCC0}
+.th-snow .btn-icon{background:rgba(99,131,134,.25);color:B3BCC0}
+.th-xross .card-header{background:linear-gradient(135deg,02232F,043547);color:EEB864}
+.th-xross .btn-icon{background:rgba(151,107,63,.25);color:EEB864}
+.th-cres .card-header{background:linear-gradient(135deg,29304E,3A4165);color:E1C4A5}
+.th-cres .btn-icon{background:rgba(117,86,106,.25);color:E1C4A5}
+.th-light .card-header{background:linear-gradient(135deg,213240,7D3B39);color:DB6B49}
+.th-light .bubble-text{border:1px solid rgba(219,107,73,.25);background:rgba(219,107,73,.06)}
+.th-light .text-actions .btn-icon{background:rgba(174,81,61,.25);color:DB6B49}
+.th-dusk2 .card-header{background:linear-gradient(135deg,28355B,3A4770);color:DDD6CB}
+.th-dusk2 .bubble-text{border:1px solid rgba(186,125,128,.25);background:rgba(186,125,128,.06)}
+.th-dusk2 .text-actions .btn-icon{background:rgba(124,83,108,.25);color:DED6CB}
