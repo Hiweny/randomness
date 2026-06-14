@@ -3,136 +3,350 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Randomness · 免费API测试台</title>
+<title>Randomness</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:#0f0f1a;color:#e0d8e8;min-height:100vh;padding:24px 16px 48px}
-.wrap{width:min(800px,100%);margin:auto}
-.time-card{background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:24px;margin-bottom:28px;text-align:center;cursor:pointer;transition:.2s}
-.time-card:hover{border-color:rgba(245,158,11,.25)}
-.time-card .time{font-size:13px;color:rgba(224,216,232,.48);margin-bottom:10px}
-.time-card .msg{font-size:20px;line-height:1.6;font-weight:500}
-.time-card .nxyj{margin-top:8px;font-size:15px;color:rgba(224,216,232,.66)}
-.header{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap}
-h1{font-size:clamp(28px,5vw,44px);letter-spacing:-.04em;background:linear-gradient(135deg,#c084fc,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2}
-.sub{color:rgba(224,216,232,.48);font-size:14px;margin-bottom:24px}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.btn{padding:6px 14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);border-radius:999px;color:rgba(224,216,232,.7);cursor:pointer;font-size:13px;transition:.15s}
-.btn:hover{border-color:rgba(192,132,252,.4);color:#e0d8e8}
-.btn.active{background:rgba(192,132,252,.2);border-color:#c084fc;color:#e0d8e8}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
-.card{border:1px solid rgba(255,255,255,.06);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s;background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.01))}
-.card:hover{border-color:rgba(192,132,252,.35);transform:translateY(-3px);box-shadow:0 8px 24px rgba(192,132,252,.12)}
-.card-header{padding:12px 14px 0;display:flex;justify-content:space-between;align-items:center}
-.card-header h3{font-size:13px;font-weight:600}
-.card-header .tag{font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(192,132,252,.18);color:#c084fc}
-.card-preview{width:100%;aspect-ratio:1;background:#141420;display:grid;place-items:center;overflow:hidden;position:relative}
-.card-preview img{width:100%;height:100%;object-fit:contain;transition:opacity .3s}
-.card-preview.static{aspect-ratio:auto;min-height:120px;padding:20px 16px;display:flex;align-items:center;justify-content:center}
-.bubble-text{background:linear-gradient(135deg,rgba(192,132,252,.15),rgba(245,158,11,.08));border:1px solid rgba(192,132,252,.2);border-radius:18px;padding:16px 18px;font-size:14px;line-height:1.7;color:rgba(224,216,232,.9);max-width:100%;word-break:break-word}
-.card-footer{padding:8px 14px 12px;color:rgba(224,216,232,.28);font-size:10px;word-break:break-all;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.refresh-btn{display:inline-flex;align-items:center;gap:4px;margin-left:auto;padding:4px 12px;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:rgba(255,255,255,.04);color:rgba(224,216,232,.5);cursor:pointer;font-size:12px;transition:.15s}
-.refresh-btn:hover{border-color:rgba(192,132,252,.4);color:#e0d8e8}
+html,body{width:100%;min-height:100vh;background:#000;overflow-x:hidden;font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;color:#e0d8e8}
+
+/* 星空背景 canvas */
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* 主容器 */
+.wrap{position:relative;z-index:1;width:min(720px,100%);margin:0 auto;padding:48px 20px 80px}
+
+/* ======= 标题区 ======= */
+.hero{text-align:center;margin-bottom:12px}
+.hero h1{font-size:clamp(36px,8vw,64px);letter-spacing:-.04em;font-weight:700;background:linear-gradient(135deg,#c084fc 0%,#818cf8 40%,#f59e0b 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2}
+
+/* 时间段一言 */
+.yiyan-box{text-align:center;margin-bottom:28px;cursor:pointer;padding:12px 0;transition:opacity .3s}
+.yiyan-box:hover{opacity:.8}
+.yiyan-box .time{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:6px}
+.yiyan-box .msg{font-size:17px;line-height:1.7;color:rgba(255,255,255,.72);font-weight:400}
+.yiyan-box .nxyj{margin-top:4px;font-size:14px;color:rgba(255,255,255,.45)}
+
+/* ======= 分类标签 ======= */
+.tags{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:24px}
+.tag{padding:7px 16px;border:1px solid rgba(255,255,255,.1);border-radius:999px;font-size:13px;cursor:pointer;transition:all .25s;background:rgba(255,255,255,.04);color:rgba(255,255,255,.65);user-select:none}
+.tag:hover{border-color:rgba(192,132,252,.4);color:#fff}
+.tag.active{background:rgba(192,132,252,.2);border-color:rgba(192,132,252,.5);color:#fff}
+
+/* ======= 卡片区 ======= */
+.cards{display:none;flex-direction:column;gap:10px;margin-top:2px}
+.cards.open{display:flex}
+
+.card{border-radius:16px;overflow:hidden;transition:all .3s;cursor:pointer}
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-size:14px;font-weight:500;letter-spacing:.3px;user-select:none}
+.card-header .arrow{font-size:11px;transition:transform .3s;opacity:.6}
+.card-header .arrow.open{transform:rotate(180deg)}
+
+.card-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.card-body.open{max-height:2000px}
+
+/* 图片展示 - 无占位，直接延伸 */
+.card-image{width:100%;background:rgba(0,0,0,.3);display:flex;flex-direction:column;align-items:center}
+.card-image img{width:100%;height:auto;object-fit:contain;display:block}
+.card-image .img-actions{width:100%;display:flex;gap:6px;padding:8px 12px;justify-content:flex-end}
+.btn-icon{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:8px;border:none;cursor:pointer;font-size:11px;transition:all .2s;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7)}
+.btn-icon:hover{background:rgba(255,255,255,.16);color:#fff}
+
+/* 文案气泡 */
+.card-text{padding:10px 14px;background:rgba(0,0,0,.2)}
+.bubble-text{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.7;word-break:break-word;position:relative}
+.text-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:6px}
+
+/* 卡片底部服务名 */
+.card-service{padding:6px 16px 10px;font-size:10px;color:rgba(255,255,255,.25);word-break:break-all}
+
+/* 加载中 / 错误 */
+.loader{text-align:center;padding:24px 16px;color:rgba(255,255,255,.35);font-size:13px}
+.err{text-align:center;padding:24px 16px;color:rgba(255,255,255,.25);font-size:13px}
+
+/* ======= 配色方案 ======= */
+
+/* 月下海 - JK制服图 */
+.theme-moon-sea .card-header{background:linear-gradient(135deg,#1A304C,#2A405C);color:#F9F3CC}
+.theme-moon-sea .card-image{background:rgba(26,48,76,.5)}
+.theme-moon-sea .btn-icon{background:rgba(95,141,182,.25);color:#F9F3CC}
+.theme-moon-sea .btn-icon:hover{background:rgba(95,141,182,.4)}
+.theme-moon-sea .bubble-text{border-color:rgba(206,172,172,.3);background:rgba(206,172,172,.08)}
+
+/* 天黑以前 - 二次元动漫 */
+.theme-dusk .card-header{background:linear-gradient(135deg,#583437,#6E3E3D);color:#B66E58}
+.theme-dusk .card-image{background:rgba(88,52,55,.5)}
+.theme-dusk .btn-icon{background:rgba(182,110,88,.25);color:#B66E58}
+.theme-dusk .btn-icon:hover{background:rgba(182,110,88,.4)}
+.theme-dusk .bubble-text{border-color:rgba(134,98,106,.3);background:rgba(134,98,106,.08)}
+
+/* 雪国夜 - 猫羽雫 */
+.theme-snow .card-header{background:linear-gradient(135deg,#063139,#1A4A52);color:#B3BCC0}
+.theme-snow .card-image{background:rgba(6,49,57,.5)}
+.theme-snow .btn-icon{background:rgba(99,131,134,.25);color:#B3BCC0}
+.theme-snow .btn-icon:hover{background:rgba(99,131,134,.4)}
+.theme-snow .bubble-text{border-color:rgba(126,91,97,.3);background:rgba(126,91,97,.08)}
+
+/* 渡月 - 随机黑丝 */
+.theme-moon-cross .card-header{background:linear-gradient(135deg,#02232F,#043547);color:#EEB864}
+.theme-moon-cross .card-image{background:rgba(2,35,47,.5)}
+.theme-moon-cross .btn-icon{background:rgba(151,107,63,.25);color:#EEB864}
+.theme-moon-cross .btn-icon:hover{background:rgba(151,107,63,.4)}
+.theme-moon-cross .bubble-text{border-color:rgba(151,107,63,.3);background:rgba(151,107,63,.08)}
+
+/* 弦月渡 - 随机白丝 */
+.theme-crescent .card-header{background:linear-gradient(135deg,#29304E,#3A4165);color:#E1C4A5}
+.theme-crescent .card-image{background:rgba(41,48,78,.5)}
+.theme-crescent .btn-icon{background:rgba(117,86,106,.25);color:#E1C4A5}
+.theme-crescent .btn-icon:hover{background:rgba(117,86,106,.4)}
+.theme-crescent .bubble-text{border-color:rgba(117,86,106,.3);background:rgba(117,86,106,.08)}
+
+/* 夜航灯 - 舔狗日记 */
+.theme-lighthouse .card-header{background:linear-gradient(135deg,#213240,#7D3B39);color:#DB6B49}
+.theme-lighthouse .bubble-text{border-color:rgba(219,107,73,.25);background:rgba(219,107,73,.06)}
+.theme-lighthouse .text-actions .btn-icon{background:rgba(174,81,61,.25);color:#DB6B49}
+
+/* 暮云深 - BugPk一言 */
+.theme-twilight .card-header{background:linear-gradient(135deg,#28355B,#3A4770);color:#DDD6CB}
+.theme-twilight .bubble-text{border-color:rgba(186,125,128,.25);background:rgba(186,125,128,.06)}
+.theme-twilight .text-actions .btn-icon{background:rgba(124,83,108,.25);color:#DDD6CB}
+
+/* ======= 响应式 ======= */
+@media(max-width:480px){
+.wrap{padding:32px 14px 60px}
+.hero h1{font-size:clamp(28px,10vw,44px)}
+.yiyan-box .msg{font-size:15px}
+}
 </style>
 </head>
 <body>
-<div class="wrap" id="app">
-<div class="time-card" id="timeCard">
-<div class="time" id="timeNow">加载中...</div>
-<div class="msg" id="timeMsg">✨</div>
-<div class="nxyj" id="timeNxyj"></div>
-</div>
-<div class="header">
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="wrap">
+<div class="hero">
 <h1>Randomness</h1>
-<button class="refresh-btn" id="refreshAll">⟳ 刷新全部</button>
 </div>
-<p class="sub">随手测各种免费好玩的 API ╮(¯▽¯)╭</p>
-<div class="actions" id="filters"></div>
-<div class="grid" id="grid"></div>
+
+<div class="yiyan-box" id="yiyanBox">
+<div class="time" id="timeLine">加载中...</div>
+<div class="msg" id="msgLine">✨</div>
+<div class="nxyj" id="nxyjLine"></div>
 </div>
+
+<div class="tags" id="tags"></div>
+<div class="cards" id="cards"></div>
+</div>
+
 <script>
-const CORS = 'https://corsproxy.io/?';
-function nocache(url){return url+(url.includes('?')?'&':'?')+'_t='+Date.now()}
+const CORS='https://corsproxy.io/?';
 
 const apis=[
-{id:'jk',name:'JK制服图',type:'img',url:'https://shanhe.kim/api/tu/jk.php',cat:'图片'},
-{id:'anime',name:'二次元动漫',type:'img',url:'https://shanhe.kim/api/tu/anime.php',cat:'图片'},
-{id:'mao',name:'猫羽雫',type:'img',url:'https://shanhe.kim/api/tu/mao.php',cat:'图片'},
-{id:'heisi',name:'随机黑丝',type:'json-img',url:'https://v2.xxapi.cn/api/heisi',parser:r=>r.data,cors:false,cat:'图片'},
-{id:'baisi',name:'随机白丝',type:'json-img',url:'https://v2.xxapi.cn/api/baisi',parser:r=>r.data,cors:false,cat:'图片'},
-{id:'setu',name:'随机色图',type:'json-img',url:'https://api.mtyqx.cn/api/random.php?return=json',parser:r=>r.imgurl,cors:true,cat:'图片'},
-{id:'tgrj',name:'舔狗日记',type:'text',url:'https://shanhe.kim/api/za/tgrj.php?type=json',parser:r=>r.text,cors:true,cat:'文案'},
-{id:'yiyan',name:'BugPk一言',type:'text',url:'https://api.bugpk.com/api/yiyan',parser:r=>{const p=r.split('/&/');return p[1]||p[0]||r},cors:false,cat:'文案'}
+{id:'jk',name:'JK制服图',type:'img',url:'https://shanhe.kim/api/tu/jk.php',theme:'moon-sea',cat:'图片'},
+{id:'anime',name:'二次元动漫',type:'img',url:'https://shanhe.kim/api/tu/anime.php',theme:'dusk',cat:'图片'},
+{id:'mao',name:'猫羽雫',type:'img',url:'https://shanhe.kim/api/tu/mao.php',theme:'snow',cat:'图片'},
+{id:'heisi',name:'随机黑丝',type:'json-img',url:'https://v2.xxapi.cn/api/heisi',parser:r=>r.data,theme:'moon-cross',cat:'图片'},
+{id:'baisi',name:'随机白丝',type:'json-img',url:'https://v2.xxapi.cn/api/baisi',parser:r=>r.data,theme:'crescent',cat:'图片'},
+{id:'tgrj',name:'舔狗日记',type:'text',url:'https://shanhe.kim/api/za/tgrj.php?type=json',parser:r=>r.text,theme:'lighthouse',cat:'文案'},
+{id:'yiyan',name:'BugPk一言',type:'text',url:'https://api.bugpk.com/api/yiyan',parser:r=>{const p=r.split('/&/');return p[1]||p[0]||r},theme:'twilight',cat:'文案'}
 ];
 
-let active='全部';
-const cats=['全部',...new Set(apis.map(a=>a.cat))];
-document.getElementById('filters').innerHTML=cats.map(c=>`<button class="btn${active===c?' active':''}" data-cat="${c}">${c}</button>`).join('');
-document.getElementById('filters').onclick=e=>{const b=e.target.closest('.btn');if(!b)return;active=b.dataset.cat;document.querySelectorAll('.btn').forEach(x=>x.classList.toggle('active',x.dataset.cat===active));render()};
+let activeCat=null;
+const cats=['图片','文案'];
 
-function render(){
-const list=active==='全部'?apis:apis.filter(a=>a.cat===active);
-document.getElementById('grid').innerHTML=list.map(a=>{
-return `<div class="card" data-id="${a.id}"><div class="card-header"><h3>${a.name}</h3><span class="tag">${a.cat}</span></div><div class="card-preview${a.type==='text'?' static':''}" id="pre-${a.id}"><div class="pl" style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">点我加载 ✨</div></div><div class="card-footer">${a.url}</div></div>`
-}).join('')}
-render();
+// 渲染分类标签
+document.getElementById('tags').innerHTML=cats.map(c=>`<span class="tag" data-cat="${c}">${c}</span>`).join('');
 
-document.getElementById('grid').onclick=async function(e){
-const card=e.target.closest('.card');if(!card)return;
-const id=card.dataset.id;const api=apis.find(a=>a.id===id);if(!api)return;
-const p=document.getElementById('pre-'+id);
-p.innerHTML='<div style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">加载中…</div>';
+// 点击分类标签
+document.getElementById('tags').onclick=function(e){
+const t=e.target.closest('.tag');if(!t)return;
+const cat=t.dataset.cat;
+if(activeCat===cat){
+activeCat=null;
+document.querySelectorAll('.tag').forEach(x=>x.classList.remove('active'));
+document.getElementById('cards').classList.remove('open');
+}else{
+activeCat=cat;
+document.querySelectorAll('.tag').forEach(x=>x.classList.toggle('active',x.dataset.cat===cat));
+renderCards(cat);
+document.getElementById('cards').classList.add('open');
+}
+};
+
+function renderCards(cat){
+const list=apis.filter(a=>a.cat===cat);
+document.getElementById('cards').innerHTML=list.map((a,i)=>{
+const th=a.theme;
+if(a.type==='img'){
+return `<div class="card theme-${th}"><div class="card-header" onclick="toggleCard(this)"><span>${a.name}</span><span class="arrow">▾</span></div><div class="card-body" id="body-${a.id}"><div class="loader">点我加载 ✦</div><div class="card-service">${a.url}</div></div></div>`
+}else if(a.type==='json-img'){
+return `<div class="card theme-${th}"><div class="card-header" onclick="toggleCard(this)"><span>${a.name}</span><span class="arrow">▾</span></div><div class="card-body" id="body-${a.id}"><div class="loader">点我加载 ✦</div><div class="card-service">${a.url}</div></div></div>`
+}else{
+return `<div class="card theme-${th}"><div class="card-header" onclick="toggleCard(this)"><span>${a.name}</span><span class="arrow">▾</span></div><div class="card-body" id="body-${a.id}"><div class="loader">点我加载 ✦</div><div class="card-service">${a.url}</div></div></div>`
+}
+}).join('');
+// 自动展开第一个
+setTimeout(()=>{
+const first=document.querySelector('.card-body');
+if(first)loadCard(first.closest('.card'));
+},200);
+}
+
+window.toggleCard=function(el){
+const body=el.nextElementSibling;
+const arrow=el.querySelector('.arrow');
+if(!body)return;
+const opening=!body.classList.contains('open');
+body.classList.toggle('open');
+arrow.classList.toggle('open');
+if(opening){
+const card=el.closest('.card');
+if(card)loadCard(card);
+}
+};
+
+async function loadCard(card){
+const id=card.dataset?.id;
+const api=apis.find(a=>a.id===id);
+if(!api)return;
+const body=card.querySelector('.card-body');
+if(!body||body.dataset.loaded)return;
+body.dataset.loaded='1';
+body.innerHTML='<div class="loader">加载中…</div>';
 try{
 if(api.type==='img'){
 const img=new Image();
-img.style.cssText='width:100%;height:100%;object-fit:contain';
-img.src=nocache(api.url);
+const t=Date.now();
+img.src=api.url+(api.url.includes('?')?'&':'?')+'_t='+t;
+img.style.cssText='width:100%;height:auto;display:block';
 await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej();setTimeout(()=>rej(),12000)});
-p.innerHTML='';p.appendChild(img);
+body.innerHTML=`<div class="card-image">${img.outerHTML}<div class="img-actions"><button class="btn-icon" onclick="downloadImg('${img.src}','${api.name}')">⬇ 下载</button></div></div><div class="card-service">${api.url}</div>`;
 }else if(api.type==='json-img'){
-const r=await fetch((api.cors?CORS:'')+api.url);
+const r=await fetch(api.cors?CORS+api.url:api.url);
 const j=await r.json();
 const u=api.parser(j);
 if(!u)throw 0;
-p.innerHTML=`<img src="${u}" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:contain">`;
+body.innerHTML=`<div class="card-image"><img src="${u}" referrerpolicy="no-referrer" style="width:100%;height:auto;display:block"><div class="img-actions"><button class="btn-icon" onclick="downloadImg('${u}','${api.name}')">⬇ 下载</button></div></div><div class="card-service">${api.url}</div>`;
 }else{
-const r=await fetch((api.cors?CORS:'')+api.url);
+const r=await fetch(api.cors?CORS+api.url:api.url);
 const t=await r.text();
 let txt='';
 try{const j=JSON.parse(t);txt=api.parser(j)}catch{txt=t};
 if(!txt)txt='(空)';
-p.innerHTML=`<div class="bubble-text">${txt}</div>`;
+body.innerHTML=`<div class="card-text"><div class="bubble-text">${txt.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div><div class="text-actions"><button class="btn-icon" onclick="copyText('${txt.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,"\\'")}')">📋 复制</button></div></div><div class="card-service">${api.url}</div>`;
 }
-}catch{e=>{p.innerHTML='<div style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">加载失败 😿</div>'}}
+body.classList.add('open');
+const arrow=card.querySelector('.arrow');
+if(arrow)arrow.classList.add('open');
+}catch(e){
+body.innerHTML='<div class="err">加载失败 😿</div><div class="card-service">'+api.url+'</div>';
+}
+}
+
+window.downloadImg=async function(url,name){
+try{
+const r=await fetch(url);
+const blob=await r.blob();
+const a=document.createElement('a');
+a.href=URL.createObjectURL(blob);
+a.download=name+'.'+blob.type.split('/')[1]||'jpg';
+a.click();
+setTimeout(()=>URL.revokeObjectURL(a.href),1e4);
+}catch{alert('下载失败')}
 };
 
-document.getElementById('timeCard').onclick=()=>loadTimeYiyan();
-async function loadTimeYiyan(){
-const n=document.getElementById('timeNow');
-const m=document.getElementById('timeMsg');
-const x=document.getElementById('timeNxyj');
-n.textContent='加载中...';
+window.copyText=function(t){
+navigator.clipboard.writeText(t).then(()=>{alert('已复制')}).catch(()=>{alert('复制失败')});
+};
+
+// 时间段一言
+document.getElementById('yiyanBox').onclick=loadYiyan;
+async function loadYiyan(){
+const tl=document.getElementById('timeLine');
+const ml=document.getElementById('msgLine');
+const nl=document.getElementById('nxyjLine');
+tl.textContent='加载中...';
 try{
 const r=await fetch(CORS+'https://shanhe.kim/api/za/time.php');
 const j=await r.json();
 if(j.code==1){
-n.textContent='⏰ '+j.nowtime+' · '+j.msg;
-m.textContent=j.nxyj;
-x.textContent='✨ 点击这里换一句话';}else throw 0;
+tl.textContent='⏰ '+j.nowtime+' · '+j.msg;
+ml.textContent=j.nxyj;
+nl.textContent='✦ 点此换一句';
+}else throw 0;
 }catch{
-n.textContent='⏰ 加载失败';
-m.textContent='生活就像一盒巧克力，你永远不知道下一颗是什么味道';}
+tl.textContent='⏰';
+ml.textContent='夜色温柔，星光正好';
+nl.textContent='';
 }
-loadTimeYiyan();
+}
+loadYiyan();
+setInterval(loadYiyan,30000);
 
-document.getElementById('refreshAll').onclick=async function(){
-this.textContent='⟳ 刷新中…';
-const list=active==='全部'?apis:apis.filter(a=>a.cat===active);
-for(const a of list){
-try{const c=document.querySelector('[data-id="'+a.id+'"]');if(c)c.click();await new Promise(r=>setTimeout(r,600))}catch{}}
-this.textContent='⟳ 刷新全部';
-};
-setInterval(loadTimeYiyan,30000);
+// ====== 星空背景canvas（从starry-sky-video-bg移植） ======
+(()=>{
+const canvas=document.getElementById('bg-canvas');
+const ctx=canvas.getContext('2d');
+let W,H,dpr;
+let time=0;
+let particles=[];
+const PC=600;
+const SPD=1.8;
+const COLORS=[
+{r:80,g:230,b:255},{r:200,g:100,b:255},{r:255,g:80,b:180},
+{r:120,g:220,b:255},{r:255,g:255,b:255},{r:255,g:150,b:255}
+];
+function resize(){
+dpr=Math.min(window.devicePixelRatio||1,2);
+W=window.innerWidth;H=window.innerHeight;
+canvas.width=W*dpr;canvas.height=H*dpr;
+ctx.setTransform(dpr,0,0,dpr,0,0);}
+function rc(){return COLORS[Math.floor(Math.random()*COLORS.length)]}
+function cp(){
+const t=Math.random();let s;
+if(t<.3)s='filled-star';else if(t<.5)s='outline-star';else if(t<.65)s='dot';
+else if(t<.78)s='cross';else if(t<.88)s='glow';else s='sparkle';
+return{x:(Math.random()-.5)*W*3,y:(Math.random()-.5)*H*3,z:Math.random()*2000+500,
+size:2+Math.random()*12,color:rc(),shape:s,phase:Math.random()*Math.PI*2,
+twinkleSpeed:.5+Math.random()*2,rotation:Math.random()*Math.PI*2,rotSpeed:(Math.random()-.5)*.02};}
+function init(){particles=[];for(let i=0;i<PC;i++){const p=cp();p.z=Math.random()*2500;particles.push(p)}}
+function ds(cx,cy,sz,cl,al,rot){
+ctx.save();ctx.translate(cx,cy);ctx.rotate(rot);ctx.beginPath();
+for(let i=0;i<10;i++){const r=i%2===0?sz:sz*.4;a=i*Math.PI/5-Math.PI/2;i===0?ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r):ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r)}
+ctx.closePath();ctx.fillStyle=`rgba(${cl.r},${cl.g},${cl.b},${al})`;ctx.shadowColor=`rgba(${cl.r},${cl.g},${cl.b},${al*.8})`;ctx.shadowBlur=sz*1.5;ctx.fill();ctx.shadowBlur=0;ctx.restore()}
+function dos(cx,cy,sz,cl,al,rot){
+ctx.save();ctx.translate(cx,cy);ctx.rotate(rot);ctx.beginPath();
+for(let i=0;i<10;i++){const r=i%2===0?sz:sz*.4;a=i*Math.PI/5-Math.PI/2;i===0?ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r):ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r)}
+ctx.closePath();ctx.strokeStyle=`rgba(${cl.r},${cl.g},${cl.b},${al})`;ctx.lineWidth=Math.max(.5,sz*.12);ctx.shadowColor=`rgba(${cl.r},${cl.g},${cl.b},${al*.6})`;ctx.shadowBlur=sz;ctx.stroke();ctx.shadowBlur=0;ctx.restore()}
+function dc(cx,cy,sz,cl,al){
+ctx.save();ctx.translate(cx,cy);ctx.strokeStyle=`rgba(${cl.r},${cl.g},${cl.b},${al})`;ctx.lineWidth=Math.max(.5,sz*.15);ctx.shadowColor=`rgba(${cl.r},${cl.g},${cl.b},${al*.7})`;ctx.shadowBlur=sz*.8;const r=sz*.7;ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(0,r);ctx.moveTo(-r,0);ctx.lineTo(r,0);ctx.stroke();ctx.shadowBlur=0;ctx.restore()}
+function dg(cx,cy,sz,cl,al){
+const g=ctx.createRadialGradient(cx,cy,0,cx,cy,sz*3);g.addColorStop(0,`rgba(${cl.r},${cl.g},${cl.b},${al*.6})`);g.addColorStop(.5,`rgba(${cl.r},${cl.g},${cl.b},${al*.2})`);g.addColorStop(1,`rgba(${cl.r},${cl.g},${cl.b},0)`);ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,sz*3,0,Math.PI*2);ctx.fill()}
+function dd(cx,cy,sz,cl,al){
+ctx.beginPath();ctx.arc(cx,cy,Math.max(.5,sz*.35),0,Math.PI*2);ctx.fillStyle=`rgba(${cl.r},${cl.g},${cl.b},${al})`;ctx.shadowColor=`rgba(${cl.r},${cl.g},${cl.b},${al*.8})`;ctx.shadowBlur=sz*1.2;ctx.fill();ctx.shadowBlur=0}
+function dsp(cx,cy,sz,cl,al,rot){
+ctx.save();ctx.translate(cx,cy);ctx.rotate(rot);ctx.strokeStyle=`rgba(${cl.r},${cl.g},${cl.b},${al})`;ctx.lineWidth=Math.max(.5,sz*.1);ctx.shadowColor=`rgba(${cl.r},${cl.g},${cl.b},${al*.7})`;ctx.shadowBlur=sz;const r=sz*.8;ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(0,r);ctx.moveTo(-r*.5,-r*.3);ctx.lineTo(r*.5,r*.3);ctx.moveTo(-r*.5,r*.3);ctx.lineTo(r*.5,-r*.3);ctx.stroke();ctx.shadowBlur=0;ctx.restore()}
+function animate(){
+time+=.016;ctx.fillStyle='rgba(0,0,0,.12)';ctx.fillRect(0,0,W,H);
+const cx=W/2,cy=H/2,fl=350;
+particles.sort((a,b)=>b.z-a.z);
+for(const p of particles){
+p.z-=SPD*(1+(2500-p.z)/2500);p.rotation+=p.rotSpeed;
+if(p.z<=10){Object.assign(p,cp());p.z=2500;continue}
+const sc=fl/p.z;sx=cx+p.x*sc;sy=cy+p.y*sc;ps=p.size*sc;
+if(sx<-50||sx>W+50||sy<-50||sy>H+50)continue;
+let al=1;if(p.z>2000)al=(2500-p.z)/500;if(p.z<200)al=p.z/200;al=Math.max(0,Math.min(1,al));
+al*=.7+.3*Math.sin(time*p.twinkleSpeed+p.phase);
+if(ps<.3){ctx.beginPath();ctx.arc(sx,sy,Math.max(.3,ps),0,Math.PI*2);ctx.fillStyle=`rgba(${p.color.r},${p.color.g},${p.color.b},${al*.6})`;ctx.fill();continue}
+switch(p.shape){
+case'filled-star':ds(sx,sy,ps,p.color,al,p.rotation);break;
+case'outline-star':dos(sx,sy,ps,p.color,al,p.rotation);break;
+case'cross':dc(sx,sy,ps,p.color,al);break;
+case'glow':dg(sx,sy,ps,p.color,al);break;
+case'sparkle':dsp(sx,sy,ps,p.color,al,p.rotation);break;
+default:dd(sx,sy,ps,p.color,al);
+}}}
+window.addEventListener('resize',resize);
+resize();init();animate();
+})();
 </script>
 </body>
 </html>
