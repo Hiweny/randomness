@@ -10,23 +10,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;backgroun
 .wrap{width:min(800px,100%);margin:auto}
 
 /* 顶部时间段一言 */
-.time-card{background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:24px;margin-bottom:28px;text-align:center}
+.time-card{background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:24px;margin-bottom:28px;text-align:center;cursor:pointer;transition:.2s}
+.time-card:hover{border-color:rgba(245,158,11,.25)}
 .time-card .time{font-size:13px;color:rgba(224,216,232,.48);margin-bottom:10px}
 .time-card .msg{font-size:20px;line-height:1.6;font-weight:500}
 .time-card .nxyj{margin-top:8px;font-size:15px;color:rgba(224,216,232,.66)}
 
-/* header */
 .header{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap}
 h1{font-size:clamp(28px,5vw,44px);letter-spacing:-.04em;background:linear-gradient(135deg,#c084fc,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2}
 .sub{color:rgba(224,216,232,.48);font-size:14px;margin-bottom:24px}
 
-/* filter */
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
 .btn{padding:6px 14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);border-radius:999px;color:rgba(224,216,232,.7);cursor:pointer;font-size:13px;transition:.15s}
 .btn:hover{border-color:rgba(192,132,252,.4);color:#e0d8e8}
 .btn.active{background:rgba(192,132,252,.2);border-color:#c084fc;color:#e0d8e8}
 
-/* grid */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
 .card{border:1px solid rgba(255,255,255,.06);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s;background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.01))}
 .card:hover{border-color:rgba(192,132,252,.35);transform:translateY(-3px);box-shadow:0 8px 24px rgba(192,132,252,.12)}
@@ -34,19 +32,16 @@ h1{font-size:clamp(28px,5vw,44px);letter-spacing:-.04em;background:linear-gradie
 .card-header h3{font-size:13px;font-weight:600}
 .card-header .tag{font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(192,132,252,.18);color:#c084fc}
 
-/* 图片预览 */
 .card-preview{width:100%;aspect-ratio:1;background:#141420;display:grid;place-items:center;overflow:hidden;position:relative}
 .card-preview img{width:100%;height:100%;object-fit:contain;transition:opacity .3s}
 .card-preview .placeholder{color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px}
 
-/* 文案气泡 */
 .card-preview.bubble{aspect-ratio:auto;min-height:120px;padding:20px 16px;display:flex;align-items:center;justify-content:center}
 .bubble-text{background:linear-gradient(135deg,rgba(192,132,252,.15),rgba(245,158,11,.08));border:1px solid rgba(192,132,252,.2);border-radius:18px;padding:16px 18px;font-size:14px;line-height:1.7;color:rgba(224,216,232,.9);max-width:100%;word-break:break-word}
 
 .card-footer{padding:8px 14px 12px;color:rgba(224,216,232,.28);font-size:10px;word-break:break-all;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .loading{text-align:center;color:rgba(224,216,232,.3);padding:48px}
 
-/* 刷新按钮 */
 .refresh-btn{display:inline-flex;align-items:center;gap:4px;margin-left:auto;padding:4px 12px;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:rgba(255,255,255,.04);color:rgba(224,216,232,.5);cursor:pointer;font-size:12px;transition:.15s}
 .refresh-btn:hover{border-color:rgba(192,132,252,.4);color:#e0d8e8}
 </style>
@@ -72,13 +67,13 @@ h1{font-size:clamp(28px,5vw,44px);letter-spacing:-.04em;background:linear-gradie
 
 <script>
 const apis=[
-{id:'jk',name:'JK制服图',type:'image',url:'http://shanhe.kim/api/tu/jk.php?type=json',parser:r=>r.image,cat:'图片'},
-{id:'anime',name:'二次元动漫',type:'image',url:'http://shanhe.kim/api/tu/anime.php?type=json',parser:r=>r.image,cat:'图片'},
-{id:'mao',name:'猫羽雫',type:'image',url:'http://shanhe.kim/api/tu/mao.php?type=json',parser:r=>r.image,cat:'图片'},
+{id:'jk',name:'JK制服图',type:'image',url:'https://shanhe.kim/api/tu/jk.php?type=json',parser:r=>r.image,cat:'图片'},
+{id:'anime',name:'二次元动漫',type:'image',url:'https://shanhe.kim/api/tu/anime.php?type=json',parser:r=>r.image,cat:'图片'},
+{id:'mao',name:'猫羽雫',type:'image',url:'https://shanhe.kim/api/tu/mao.php?type=json',parser:r=>r.image,cat:'图片'},
 {id:'heisi',name:'随机黑丝',type:'image',url:'https://v2.xxapi.cn/api/heisi',parser:r=>r.data,cat:'图片'},
 {id:'baisi',name:'随机白丝',type:'image',url:'https://v2.xxapi.cn/api/baisi',parser:r=>r.data,cat:'图片'},
 {id:'setu',name:'随机色图',type:'image',url:'https://api.mtyqx.cn/api/random.php?return=json',parser:r=>r.imgurl,cat:'图片'},
-{id:'tgrj',name:'舔狗日记',type:'text',url:'http://shanhe.kim/api/za/tgrj.php?type=json',parser:r=>r.text,cat:'文案'},
+{id:'tgrj',name:'舔狗日记',type:'text',url:'https://shanhe.kim/api/za/tgrj.php?type=json',parser:r=>r.text,cat:'文案'},
 {id:'yiyan',name:'BugPk一言',type:'text',url:'https://api.bugpk.com/api/yiyan',parser:r=>{const p=r.split('/&/');return p[1]||p[0]||r},cat:'文案'}
 ];
 
@@ -98,7 +93,6 @@ return `<div class="card" data-id="${a.id}"><div class="card-header"><h3>${a.nam
 }).join('')}
 render();
 
-// 加载单个卡片
 document.getElementById('grid').onclick=async function(e){
 const card=e.target.closest('.card');if(!card)return;
 const id=card.dataset.id;const api=apis.find(a=>a.id===id);if(!api)return;
@@ -126,7 +120,6 @@ preview.innerHTML=`<div class="bubble-text">${txt}</div>`;
 }catch(e){preview.innerHTML='<div class="placeholder">加载失败 😿</div>'}
 }
 
-// 加载时间段一言
 document.getElementById('timeCard').onclick=async function(){
 loadTimeYiyan();
 };
@@ -136,7 +129,7 @@ const m=document.getElementById('timeMsg');
 const x=document.getElementById('timeNxyj');
 n.textContent='加载中...';
 try{
-const r=await fetch('http://shanhe.kim/api/za/time.php');
+const r=await fetch('https://shanhe.kim/api/za/time.php');
 const j=await r.json();
 if(j.code==1){
 n.textContent='⏰ '+j.nowtime+' · '+j.msg;
@@ -150,17 +143,14 @@ m.textContent='生活就像一盒巧克力，你永远不知道下一颗是什�
 }
 loadTimeYiyan();
 
-// 刷新全部功能
 document.getElementById('refreshAll').onclick=async function(){
 const btn=this;
 btn.textContent='⟳ 刷新中…';
-// 刷新全部卡片
 const all=active==='全部'?apis:apis.filter(a=>a.cat===active);
 await Promise.all(all.map(a=>loadCard(a).catch(()=>{})));
 btn.textContent='⟳ 刷新全部';
 };
 
-// 每30秒自动刷新一言
 setInterval(loadTimeYiyan,30000);
 </script>
 </body>
