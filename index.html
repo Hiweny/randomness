@@ -51,19 +51,16 @@ h1{font-size:clamp(28px,5vw,44px);letter-spacing:-.04em;background:linear-gradie
 <div class="grid" id="grid"></div>
 </div>
 <script>
-// CORS代理（需解析JSON时使用）
 const CORS = 'https://corsproxy.io/?';
+function nocache(url){return url+(url.includes('?')?'&':'?')+'_t='+Date.now()}
 
 const apis=[
-// 图片类 - 直接<img>加载（shanhe默认返回图片）
 {id:'jk',name:'JK制服图',type:'img',url:'https://shanhe.kim/api/tu/jk.php',cat:'图片'},
 {id:'anime',name:'二次元动漫',type:'img',url:'https://shanhe.kim/api/tu/anime.php',cat:'图片'},
 {id:'mao',name:'猫羽雫',type:'img',url:'https://shanhe.kim/api/tu/mao.php',cat:'图片'},
-// 图片类 - 需CORS代理解析JSON
 {id:'heisi',name:'随机黑丝',type:'json-img',url:'https://v2.xxapi.cn/api/heisi',parser:r=>r.data,cors:false,cat:'图片'},
 {id:'baisi',name:'随机白丝',type:'json-img',url:'https://v2.xxapi.cn/api/baisi',parser:r=>r.data,cors:false,cat:'图片'},
 {id:'setu',name:'随机色图',type:'json-img',url:'https://api.mtyqx.cn/api/random.php?return=json',parser:r=>r.imgurl,cors:true,cat:'图片'},
-// 文案类 - 需CORS代理
 {id:'tgrj',name:'舔狗日记',type:'text',url:'https://shanhe.kim/api/za/tgrj.php?type=json',parser:r=>r.text,cors:true,cat:'文案'},
 {id:'yiyan',name:'BugPk一言',type:'text',url:'https://api.bugpk.com/api/yiyan',parser:r=>{const p=r.split('/&/');return p[1]||p[0]||r},cors:false,cat:'文案'}
 ];
@@ -76,52 +73,40 @@ document.getElementById('filters').onclick=e=>{const b=e.target.closest('.btn');
 function render(){
 const list=active==='全部'?apis:apis.filter(a=>a.cat===active);
 document.getElementById('grid').innerHTML=list.map(a=>{
-if(a.type==='img'){
-return `<div class="card" data-id="${a.id}"><div class="card-header"><h3>${a.name}</h3><span class="tag">${a.cat}</span></div><div class="card-preview" id="pre-${a.id}"><div class="placeholder" style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">点我加载 ✨</div></div><div class="card-footer">${a.url}</div></div>`
-}else if(a.type==='json-img'){
-return `<div class="card" data-id="${a.id}"><div class="card-header"><h3>${a.name}</h3><span class="tag">${a.cat}</span></div><div class="card-preview" id="pre-${a.id}"><div class="placeholder" style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">点我加载 ✨</div></div><div class="card-footer">${a.url}</div></div>`
-}else{
-return `<div class="card" data-id="${a.id}"><div class="card-header"><h3>${a.name}</h3><span class="tag">${a.cat}</span></div><div class="card-preview static" id="pre-${a.id}"><div class="placeholder" style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">点我加载 ✨</div></div><div class="card-footer">${a.url}</div></div>`
-}
+return `<div class="card" data-id="${a.id}"><div class="card-header"><h3>${a.name}</h3><span class="tag">${a.cat}</span></div><div class="card-preview${a.type==='text'?' static':''}" id="pre-${a.id}"><div class="pl" style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">点我加载 ✨</div></div><div class="card-footer">${a.url}</div></div>`
 }).join('')}
 render();
 
 document.getElementById('grid').onclick=async function(e){
 const card=e.target.closest('.card');if(!card)return;
 const id=card.dataset.id;const api=apis.find(a=>a.id===id);if(!api)return;
-const preview=document.getElementById('pre-'+id);
-preview.innerHTML='<div style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">加载中…</div>';
+const p=document.getElementById('pre-'+id);
+p.innerHTML='<div style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">加载中…</div>';
 try{
 if(api.type==='img'){
-// 直接<img>加载图片，无CORS问题
 const img=new Image();
 img.style.cssText='width:100%;height:100%;object-fit:contain';
-img.src=api.url+'&_t='+Date.now();
-await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej('img error');setTimeout(()=>rej('timeout'),15000)});
-preview.innerHTML='';
-preview.appendChild(img);
+img.src=nocache(api.url);
+await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej();setTimeout(()=>rej(),12000)});
+p.innerHTML='';p.appendChild(img);
 }else if(api.type==='json-img'){
-const url=(api.cors?CORS:'')+api.url;
-const r=await fetch(url);
+const r=await fetch((api.cors?CORS:'')+api.url);
 const j=await r.json();
-const imgUrl=api.parser(j);
-if(!imgUrl)throw'no url';
-preview.innerHTML=`<img src="${imgUrl}" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:contain">`;
+const u=api.parser(j);
+if(!u)throw 0;
+p.innerHTML=`<img src="${u}" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:contain">`;
 }else{
-const url=(api.cors?CORS:'')+api.url;
-const r=await fetch(url);
+const r=await fetch((api.cors?CORS:'')+api.url);
 const t=await r.text();
 let txt='';
 try{const j=JSON.parse(t);txt=api.parser(j)}catch{txt=t};
 if(!txt)txt='(空)';
-preview.innerHTML=`<div class="bubble-text">${txt}</div>`;
+p.innerHTML=`<div class="bubble-text">${txt}</div>`;
 }
-}catch(e){preview.innerHTML='<div style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">加载失败 😿</div>'}
+}catch{e=>{p.innerHTML='<div style="color:rgba(224,216,232,.25);font-size:13px;text-align:center;padding:12px">加载失败 😿</div>'}}
 };
 
-document.getElementById('timeCard').onclick=async function(){
-loadTimeYiyan();
-};
+document.getElementById('timeCard').onclick=()=>loadTimeYiyan();
 async function loadTimeYiyan(){
 const n=document.getElementById('timeNow');
 const m=document.getElementById('timeMsg');
@@ -133,29 +118,20 @@ const j=await r.json();
 if(j.code==1){
 n.textContent='⏰ '+j.nowtime+' · '+j.msg;
 m.textContent=j.nxyj;
-x.textContent='✨ 点击这里换一句话';
-}else{throw'bad'}
+x.textContent='✨ 点击这里换一句话';}else throw 0;
 }catch{
 n.textContent='⏰ 加载失败';
-m.textContent='生活就像一盒巧克力，你永远不知道下一颗是什么味道';
-}
+m.textContent='生活就像一盒巧克力，你永远不知道下一颗是什么味道';}
 }
 loadTimeYiyan();
 
 document.getElementById('refreshAll').onclick=async function(){
-const btn=this;
-btn.textContent='⟳ 刷新中…';
-const all=active==='全部'?apis:apis.filter(a=>a.cat===active);
-for(const a of all){
-try{
-const card=document.querySelector(`[data-id="${a.id}"]`);
-if(card)card.click();
-await new Promise(r=>setTimeout(r,500));
-}catch{}
-}
-btn.textContent='⟳ 刷新全部';
+this.textContent='⟳ 刷新中…';
+const list=active==='全部'?apis:apis.filter(a=>a.cat===active);
+for(const a of list){
+try{const c=document.querySelector('[data-id="'+a.id+'"]');if(c)c.click();await new Promise(r=>setTimeout(r,600))}catch{}}
+this.textContent='⟳ 刷新全部';
 };
-
 setInterval(loadTimeYiyan,30000);
 </script>
 </body>
